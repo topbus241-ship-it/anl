@@ -34,18 +34,11 @@ export default function FormularioSinistro() {
   };
 
   const handleFileChange = (e) => {
-    const arquivos = Array.from(e.target.files || []).map((file) => {
-      const preview = URL.createObjectURL(file);
-      return Object.assign(file, { preview });
-    });
-    setFotos([...fotos, ...arquivos]);
+    const files = Array.from(e.target.files);
+    setFotos([...fotos, ...files]);
   };
 
   const removerFoto = (index) => {
-    const arquivo = fotos[index];
-    if (arquivo?.preview) {
-      URL.revokeObjectURL(arquivo.preview);
-    }
     setFotos(fotos.filter((_, i) => i !== index));
   };
 
@@ -104,19 +97,14 @@ export default function FormularioSinistro() {
     setResponsabilidade('');
     setTestemunhas([{ nome: '', telefone: '' }]);
     setDescricao('');
-    fotos.forEach((arquivo) => {
-      if (arquivo?.preview) {
-        URL.revokeObjectURL(arquivo.preview);
-      }
-    });
     setFotos([]);
   };
 
   const coresUnidade = unidade === 'TOPBUS' 
-    ? { primary: '#0f172a', secondary: '#1e293b', light: '#f1f5f9', hover: '#020617', accent: '#334155' }
+    ? { primary: '#1e40af', secondary: '#3b82f6', light: '#dbeafe', hover: '#1e3a8a' }
     : unidade === 'BELO_MONTE'
-    ? { primary: '#1e3a8a', secondary: '#2563eb', light: '#dbeafe', hover: '#1e40af', accent: '#3b82f6' }
-    : { primary: '#475569', secondary: '#64748b', light: '#f8fafc', hover: '#334155', accent: '#94a3b8' };
+    ? { primary: '#047857', secondary: '#10b981', light: '#d1fae5', hover: '#065f46' }
+    : { primary: '#1e293b', secondary: '#475569', light: '#f1f5f9', hover: '#0f172a' };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 py-6 sm:py-12 px-4">
@@ -171,21 +159,25 @@ export default function FormularioSinistro() {
       `}</style>
 
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
-          <div className="bg-slate-50 px-6 sm:px-8 py-6 border-b border-gray-200">
+        {/* Header */}
+        <div className="bg-white border border-gray-200 rounded-t-2xl shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-6 sm:px-8 py-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg border border-slate-200 bg-white p-2.5">
-                <FileText className="w-5 h-5 text-slate-600" strokeWidth={1.6} />
+              <div className="bg-white/10 p-3 rounded-lg backdrop-blur-sm">
+                <FileText className="w-6 h-6 text-white" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Dados do Registro</h2>
-                <p className="text-sm text-slate-600">
-                  Preencha todos os campos obrigatórios para registrar o sinistro.
-                </p>
+                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  Sistema de Gestão de Sinistros
+                </h1>
+                <p className="text-slate-300 text-sm mt-1">Registro e acompanhamento de ocorrências</p>
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Formulário */}
+        <div className="bg-white border-x border-b border-gray-200 rounded-b-2xl shadow-lg">
           <div className="px-6 sm:px-8 py-8 space-y-8">
             
             {/* Seleção de Empresa */}
@@ -452,17 +444,11 @@ export default function FormularioSinistro() {
                           {fotos.map((foto, index) => (
                             <div key={index} className="relative group animate-fadeIn">
                               <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden shadow-md">
-                                {foto.preview ? (
-                                  <img
-                                    src={foto.preview}
-                                    alt={`Foto ${index + 1}`}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                  />
-                                ) : (
-                                  <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-gray-600">
-                                    Pré-visualização indisponível
-                                  </div>
-                                )}
+                                <img
+                                  src={URL.createObjectURL(foto)}
+                                  alt={`Foto ${index + 1}`}
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                />
                               </div>
                               <button
                                 onClick={() => removerFoto(index)}

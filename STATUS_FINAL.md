@@ -8,6 +8,7 @@
 ## ✅ VALIDAÇÃO BEM-SUCEDIDA
 
 ### Teste Manual (Apps Script Editor) - **SUCESSO**
+
 ```json
 {
   "sucesso": true,
@@ -26,11 +27,13 @@
 - ✅ Tempo: 4 segundos
 
 ### Teste GET Externo (curl) - **SUCESSO**
+
 ```bash
 curl -L "https://script.google.com/macros/s/.../exec"
 ```
 
 **Resposta:**
+
 ```json
 {
   "sucesso": true,
@@ -53,16 +56,19 @@ curl -L "https://script.google.com/macros/s/.../exec"
 ### Teste POST Externo (curl) - **HTTP 302 Redirect**
 
 **Comportamento observado:**
+
 - Requisições POST externas retornam HTTP 302 (Moved Temporarily)
 - Isso é uma limitação do Google Apps Script com cache e redirects
 - **NÃO afeta o funcionamento real do sistema**
 
 **Por que isso acontece:**
+
 1. Google Apps Script usa CDN (Content Delivery Network)
 2. Cache agressivo pode retornar versões antigas
 3. Redirects automáticos não funcionam bem com POST + JSON
 
 **Soluções:**
+
 1. ✅ **Frontend React** - Vai funcionar normalmente (axios/fetch seguem redirects automaticamente)
 2. ✅ **Teste manual no Apps Script** - Confirma que o código está correto
 3. ⚠️ **curl direto** - Limitado por design do Google
@@ -71,7 +77,7 @@ curl -L "https://script.google.com/macros/s/.../exec"
 
 ## 🎯 CONCLUSÃO
 
-### O sistema está **100% operacional** para:
+### O sistema está **100% operacional** para
 
 1. **Frontend React** ✅
    - Formulário envia POST com axios
@@ -94,6 +100,7 @@ curl -L "https://script.google.com/macros/s/.../exec"
 ## 🚀 PRÓXIMAS AÇÕES RECOMENDADAS
 
 ### 1. Testar Frontend React (PRIORITÁRIO)
+
 ```bash
 cd /workspaces/topbusanalise
 npm install
@@ -103,16 +110,19 @@ npm start
 **Por que:** O frontend usa bibliotecas que lidam corretamente com redirects do Google Apps Script.
 
 ### 2. Verificar Dados no Google Sheets
-- Abrir: https://docs.google.com/spreadsheets/d/1ZtatcnU7jwHXrso5mSIMRFQIFFUhsihUyGvRK36klSo
+
+- Abrir: <https://docs.google.com/spreadsheets/d/1ZtatcnU7jwHXrso5mSIMRFQIFFUhsihUyGvRK36klSo>
 - Verificar protocolo `SIN-TB-20251113-051706-6550` na aba TOPBUS
 - Confirmar todos os campos preenchidos
 
 ### 3. Verificar Pasta no Google Drive
-- Abrir: https://drive.google.com/drive/folders/1AQFiXi9-xDulKgO-qZCF3tRrBIsrWcf4
+
+- Abrir: <https://drive.google.com/drive/folders/1AQFiXi9-xDulKgO-qZCF3tRrBIsrWcf4>
 - Navegar: `Arquivos/TOPBUS/SIN-TB-20251113-051706-6550/`
 - Confirmar arquivo `metadata.json`
 
 ### 4. Deploy no Netlify
+
 - Conectar repositório GitHub
 - Adicionar variáveis de ambiente (`.env.local`)
 - Build e deploy
@@ -122,6 +132,7 @@ npm start
 ## 📚 DOCUMENTAÇÃO CRIADA
 
 Arquivos de referência:
+
 - ✅ `APPS_SCRIPT_CODIGO.gs` - Código completo (325 linhas)
 - ✅ `appsscript.json` - Configurações do projeto
 - ✅ `SISTEMA_FUNCIONAL.md` - Resumo técnico completo
@@ -136,6 +147,7 @@ Arquivos de referência:
 ## 🔧 CONFIGURAÇÃO ATUAL
 
 ### Apps Script v5
+
 ```
 URL: https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec
 Deploy: v5
@@ -145,6 +157,7 @@ Runtime: V8
 ```
 
 ### Recursos Integrados
+
 ```
 Google Sheets: 1ZtatcnU7jwHXrso5mSIMRFQIFFUhsihUyGvRK36klSo
   - Aba TOPBUS (gid=0)
@@ -175,6 +188,7 @@ Google Drive: 1AQFiXi9-xDulKgO-qZCF3tRrBIsrWcf4
 ## 🎨 NOVA INTERFACE (Commit 5cc5d36)
 
 **FormularioSinistro.jsx atualizado com:**
+
 - ✅ Design moderno com gradientes e animações suaves
 - ✅ Dropdown elegante para seleção de empresa
 - ✅ Guia visual dos 4 ângulos obrigatórios de fotos (ônibus ilustrado)
@@ -209,6 +223,7 @@ npm run build && npx netlify deploy --prod
 ```
 
 Após deploy, verifique:
+
 - ✅ CSS e JavaScript carregando
 - ✅ Formulário com novo layout moderno
 - ✅ Integração com Apps Script operacional

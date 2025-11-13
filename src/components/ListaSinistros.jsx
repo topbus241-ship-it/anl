@@ -1,5 +1,27 @@
 import { useState, useEffect } from 'react'
-import { Search, ExternalLink } from 'lucide-react'
+import { Search, ExternalLink, RotateCcw } from 'lucide-react'
+
+const DEFAULT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec'
+
+const EMPRESA_LABELS = {
+  topbus: 'Consórcio Metropolitano',
+  belomonte: 'Belo Monte Transportes'
+}
+
+const EMPRESA_THEMES = {
+  topbus: {
+    header: 'bg-slate-800',
+    badge: 'bg-slate-100 text-slate-700'
+  },
+  belomonte: {
+    header: 'bg-emerald-700',
+    badge: 'bg-emerald-100 text-emerald-700'
+  },
+  default: {
+    header: 'bg-slate-700',
+    badge: 'bg-slate-100 text-slate-700'
+  }
+}
 
 export default function ListaSinistros() {
   const [sinistros, setSinistros] = useState([])
@@ -10,7 +32,7 @@ export default function ListaSinistros() {
   const [erro, setErro] = useState('')
 
   const API_CONFIG = {
-    URL: import.meta.env.VITE_APPS_SCRIPT_URL || process.env.REACT_APP_APPS_SCRIPT_URL,
+    URL: import.meta.env.VITE_APPS_SCRIPT_URL || process.env.REACT_APP_APPS_SCRIPT_URL || DEFAULT_APPS_SCRIPT_URL,
     API_KEY: import.meta.env.VITE_API_KEY || process.env.REACT_APP_API_KEY
   }
 
@@ -27,7 +49,13 @@ export default function ListaSinistros() {
     try {
       setCarregando(true)
       setErro('')
-      const url = `${API_CONFIG.URL}?empresa=${filtroEmpresa}&periodo=${periodo}`
+      if (!API_CONFIG.URL) {
+        setErro('URL do serviço não configurada.')
+        setSinistros([])
+        return
+      }
+
+      const url = `${API_CONFIG.URL}?empresa=${encodeURIComponent(filtroEmpresa)}&periodo=${encodeURIComponent(periodo)}`
       const response = await fetch(url)
       const data = await response.json()
 
@@ -45,29 +73,32 @@ export default function ListaSinistros() {
     }
   }
 
-  const sinistrosFiltrados = sinistros.filter(s => {
-    const buscarTermo = busca.toLowerCase()
+  const sinistrosFiltrados = sinistros.filter((s) => {
+    const termo = busca.toLowerCase()
     return (
-      (s.protocolo?.toLowerCase().includes(buscarTermo) || false) ||
-      (s.local?.toLowerCase().includes(buscarTermo) || false) ||
-      (s.motorista?.toLowerCase().includes(buscarTermo) || false)
+      (s.protocolo?.toLowerCase().includes(termo) || false) ||
+      (s.local?.toLowerCase().includes(termo) || false) ||
+      (s.motorista?.toLowerCase().includes(termo) || false)
     )
   })
 
   const abrirPlanilha = (empresa) => {
-    window.open(SHEET_IDS[empresa], '_blank')
+    const chave = (empresa || '').toLowerCase()
+    if (SHEET_IDS[chave]) {
+      window.open(SHEET_IDS[chave], '_blank')
+    }
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
-          📊 Listagem de Sinistros
+        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-8 text-gray-800">
+          Painel de Sinistros
         </h1>
 
         {erro && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
-            <p className="font-bold">⚠️ Erro</p>
+          <div className="bg-red-100 border border-red-300 text-red-700 p-4 mb-6 rounded">
+            <p className="font-bold uppercase text-xs tracking-wide">Erro</p>
             <p>{erro}</p>
           </div>
         )}
@@ -82,7 +113,7 @@ export default function ListaSinistros() {
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-slate-600"
                 placeholder="Buscar protocolo, local..."
               />
             </div>
@@ -92,11 +123,11 @@ export default function ListaSinistros() {
               <select
                 value={filtroEmpresa}
                 onChange={(e) => setFiltroEmpresa(e.target.value)}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-slate-600"
               >
                 <option value="all">Todas as Unidades</option>
-                <option value="topbus">🚌 TOPBUS</option>
-                <option value="belomonte">🏔️ BELO MONTE</option>
+                <option value="topbus">Consórcio Metropolitano</option>
+                <option value="belomonte">Belo Monte Transportes</option>
               </select>
             </div>
 
@@ -105,7 +136,7 @@ export default function ListaSinistros() {
               <select
                 value={periodo}
                 onChange={(e) => setPeriodo(e.target.value)}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-slate-600"
               >
                 <option value="todos">Todos os períodos</option>
                 <option value="hoje">Hoje</option>
@@ -117,100 +148,106 @@ export default function ListaSinistros() {
             {/* Botão Atualizar */}
             <button
               onClick={fetchSinistros}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-semibold"
+              className="bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900 font-semibold flex items-center justify-center gap-2"
             >
-              🔄 Atualizar
+              <RotateCcw size={18} />
+              Atualizar
             </button>
           </div>
         </div>
 
         {/* Estado de Carregamento */}
         {carregando && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin text-4xl">⏳</div>
-            <p className="text-gray-600 mt-2">Carregando sinistros...</p>
+          <div className="text-center py-12 text-gray-600">
+            <div className="inline-flex items-center gap-2 text-sm font-semibold">
+              <span className="h-2 w-2 rounded-full bg-gray-400 animate-pulse" />
+              Carregando sinistros...
+            </div>
           </div>
         )}
 
         {/* Lista de Sinistros */}
         {!carregando && sinistrosFiltrados.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sinistrosFiltrados.map((sinistro) => (
-              <div key={sinistro.id} className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
-                {/* Header */}
-                <div className={`p-4 ${
-                  sinistro.empresa === 'topbus'
-                    ? 'bg-blue-600'
-                    : 'bg-green-600'
-                } text-white`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-bold">{sinistro.protocolo || 'SIN-XXXX'}</h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      sinistro.empresa === 'topbus'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-green-100 text-green-700'
-                    }`}>
-                      {sinistro.empresa === 'topbus' ? '🚌 TOPBUS' : '🏔️ BELO MONTE'}
-                    </span>
-                  </div>
-                  <p className="text-sm opacity-90">{sinistro.dataHora || '—'}</p>
-                </div>
+            {sinistrosFiltrados.map((sinistro) => {
+              const empresaKey = (sinistro.empresa || '').toLowerCase()
+              const tema = EMPRESA_THEMES[empresaKey] || EMPRESA_THEMES.default
+              const etiqueta = EMPRESA_LABELS[empresaKey] || 'Unidade'
 
-                {/* Conteúdo */}
-                <div className="p-4 space-y-3">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold">Local</p>
-                    <p className="text-gray-800 font-semibold">{sinistro.local || '—'}</p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase font-semibold">Ônibus</p>
-                      <p className="text-gray-800 font-semibold">{sinistro.onibus || '—'}</p>
+              return (
+                <div
+                  key={sinistro.id}
+                  className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow"
+                >
+                  {/* Header */}
+                  <div className={`p-4 text-white ${tema.header}`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="text-lg font-bold">{sinistro.protocolo || 'SIN-XXXX'}</h3>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${tema.badge}`}>
+                        {etiqueta}
+                      </span>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase font-semibold">Motorista</p>
-                      <p className="text-gray-800 font-semibold text-sm">{sinistro.motorista || '—'}</p>
-                    </div>
+                    <p className="text-sm opacity-90">{sinistro.dataHora || '—'}</p>
                   </div>
 
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold">Culpabilidade</p>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                      sinistro.culpabilidade === 'Motorista'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {sinistro.culpabilidade || '—'}
-                    </span>
+                  {/* Conteúdo */}
+                  <div className="p-4 space-y-3">
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase font-semibold">Local</p>
+                      <p className="text-gray-800 font-semibold">{sinistro.local || '—'}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase font-semibold">Ônibus</p>
+                        <p className="text-gray-800 font-semibold">{sinistro.onibus || '—'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase font-semibold">Motorista</p>
+                        <p className="text-gray-800 font-semibold text-sm">{sinistro.motorista || '—'}</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase font-semibold">Culpabilidade</p>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                          sinistro.culpabilidade === 'Motorista'
+                            ? 'bg-red-100 text-red-700'
+                            : 'bg-amber-100 text-amber-700'
+                        }`}
+                      >
+                        {sinistro.culpabilidade || '—'}
+                      </span>
+                    </div>
+
+                    {sinistro.descricao && (
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase font-semibold">Descrição</p>
+                        <p className="text-gray-700 text-sm line-clamp-2">{sinistro.descricao}</p>
+                      </div>
+                    )}
                   </div>
 
-                  {sinistro.descricao && (
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase font-semibold">Descrição</p>
-                      <p className="text-gray-700 text-sm line-clamp-2">{sinistro.descricao}</p>
-                    </div>
-                  )}
+                  {/* Footer */}
+                  <div className="bg-gray-50 px-4 py-3 flex gap-2">
+                    <button
+                      onClick={() => abrirPlanilha(sinistro.empresa)}
+                      className="flex-1 flex items-center justify-center gap-2 bg-slate-800 text-white px-3 py-2 rounded-lg hover:bg-slate-900 text-sm font-semibold"
+                    >
+                      <ExternalLink size={16} /> Planilha
+                    </button>
+                  </div>
                 </div>
-
-                {/* Footer */}
-                <div className="bg-gray-50 px-4 py-3 flex gap-2">
-                  <button
-                    onClick={() => abrirPlanilha(sinistro.empresa)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 text-sm font-semibold"
-                  >
-                    <ExternalLink size={16} /> Planilha
-                  </button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
         {/* Sem resultados */}
         {!carregando && sinistrosFiltrados.length === 0 && (
           <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-500 text-lg">😕 Nenhum sinistro encontrado</p>
+            <p className="text-gray-600 text-lg font-semibold">Nenhum sinistro encontrado</p>
             <p className="text-gray-400 text-sm mt-2">Tente ajustar os filtros</p>
           </div>
         )}

@@ -9,11 +9,13 @@
 ## ⚠️ PROBLEMA IDENTIFICADO
 
 ### Sintoma
+
 - Frontend React implantado no Netlify não carregava CSS e JavaScript
 - Página aparecia sem estilos (HTML puro)
 - Console do navegador mostrava erros de tipo MIME incorreto
 
 ### Causa Raiz
+
 O arquivo `netlify.toml` continha uma configuração problemática que **forçava** todos os arquivos a serem servidos como `text/html`:
 
 ```toml
@@ -24,6 +26,7 @@ O arquivo `netlify.toml` continha uma configuração problemática que **forçav
 ```
 
 Isso causava:
+
 - Arquivos CSS sendo servidos como HTML (deveria ser `text/css`)
 - Arquivos JavaScript sendo servidos como HTML (deveria ser `application/javascript`)
 - Navegadores rejeitando esses arquivos por tipo MIME incorreto
@@ -55,7 +58,7 @@ Isso causava:
     Cache-Control = "public, max-age=31536000, immutable"
 ```
 
-### O que foi feito:
+### O que foi feito
 
 1. ✅ **Removido `Content-Type` forçado**
    - Netlify agora detecta automaticamente o tipo MIME correto de cada arquivo
@@ -78,6 +81,7 @@ Isso causava:
 ## 📊 IMPACTO DA CORREÇÃO
 
 ### Antes (❌ Quebrado)
+
 ```
 GET /assets/index.css
 Content-Type: text/html; charset=utf-8  ❌
@@ -86,6 +90,7 @@ Navegador: ERRO - MIME type incorreto!
 ```
 
 ### Depois (✅ Funcionando)
+
 ```
 GET /assets/index.css
 Content-Type: text/css  ✅
@@ -103,19 +108,22 @@ Navegador: CSS carregado corretamente!
 O código já está corrigido e commitado no GitHub. Para aplicar:
 
 **Opção A: Deploy automático via GitHub**
+
 ```bash
 # Netlify detectará o push e fará redeploy automaticamente
 # Se conectado via GitHub Integration
 ```
 
 **Opção B: Deploy manual via CLI**
+
 ```bash
 npm run build
 npx netlify deploy --prod
 ```
 
 **Opção C: Via Netlify Dashboard**
-1. Acessar https://app.netlify.com
+
+1. Acessar <https://app.netlify.com>
 2. Selecionar o site
 3. Clicar em "Deploys" → "Trigger deploy" → "Deploy site"
 
@@ -143,11 +151,13 @@ curl -I https://seu-site.netlify.app/assets/index.css
 ## 📚 REFERÊNCIAS
 
 ### Documentação Netlify
+
 - [Headers and Basic Auth](https://docs.netlify.com/routing/headers/)
 - [Cache Control](https://docs.netlify.com/routing/headers/#multi-value-headers)
 - [Content-Type Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
 
 ### Arquivos Modificados
+
 - ✅ `/netlify.toml` - Headers corrigidos
 - ✅ `INSTRUCOES_DEPLOY.md` - Guia de deploy criado
 - ✅ `SISTEMA_FUNCIONAL.md` - Documentação técnica
@@ -157,7 +167,8 @@ curl -I https://seu-site.netlify.app/assets/index.css
 
 ## 🔍 COMO EVITAR NO FUTURO
 
-### ❌ Não fazer:
+### ❌ Não fazer
+
 ```toml
 [[headers]]
   for = "/*"
@@ -165,7 +176,8 @@ curl -I https://seu-site.netlify.app/assets/index.css
     Content-Type = "text/html"  # NUNCA force Content-Type globalmente!
 ```
 
-### ✅ Fazer:
+### ✅ Fazer
+
 ```toml
 # Deixe o Netlify detectar Content-Type automaticamente
 # Apenas adicione headers de segurança e cache
