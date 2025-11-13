@@ -166,9 +166,23 @@ Google Drive: 1AQFiXi9-xDulKgO-qZCF3tRrBIsrWcf4
 | API POST Endpoint | ✅ FUNCIONANDO | Validado no editor, redirect externo esperado |
 | Google Sheets | ✅ FUNCIONANDO | Dados salvos corretamente |
 | Google Drive | ✅ FUNCIONANDO | Pastas criadas automaticamente |
-| Frontend React | ✅ PRONTO | Build testado localmente |
-| Netlify Headers | ✅ CORRIGIDO | Content-Type forçado removido |
+| Frontend React | ✅ ATUALIZADO | Novo layout moderno implementado (Commit 5cc5d36) |
+| Netlify Headers | ✅ CORRIGIDO | Content-Type forçado removido (Commit aba272f) |
 | Deploy Netlify | 🚀 PRONTO | Aguardando deploy final |
+
+---
+
+## 🎨 NOVA INTERFACE (Commit 5cc5d36)
+
+**FormularioSinistro.jsx atualizado com:**
+- ✅ Design moderno com gradientes e animações suaves
+- ✅ Dropdown elegante para seleção de empresa
+- ✅ Guia visual dos 4 ângulos obrigatórios de fotos (ônibus ilustrado)
+- ✅ Sistema de cores dinâmico: TOPBUS (azul) / BELO MONTE (verde)
+- ✅ Animações: slideDown, fadeIn, hover effects
+- ✅ Preview de fotos com contador e indicador de completude
+- ✅ UX aprimorada com transições CSS e feedback visual
+- ✅ Responsivo para mobile e desktop
 
 ---
 
@@ -196,8 +210,9 @@ npm run build && npx netlify deploy --prod
 
 Após deploy, verifique:
 - ✅ CSS e JavaScript carregando
-- ✅ Formulário funcional
+- ✅ Formulário com novo layout moderno
 - ✅ Integração com Apps Script operacional
+- ✅ Fotos com guia visual dos 4 ângulos
 
 ---
 
