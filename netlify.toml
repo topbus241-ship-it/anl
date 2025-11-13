@@ -7,10 +7,21 @@
   to = "/index.html"
   status = 200
 
+# Headers de segurança globais (sem forçar Content-Type)
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Content-Type = "text/html; charset=utf-8"
+
+# Cache para arquivos HTML
+[[headers]]
+  for = "/*.html"
+  [headers.values]
     Cache-Control = "public, max-age=3600"
+
+# Cache otimizado para assets estáticos (CSS, JS, imagens)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
