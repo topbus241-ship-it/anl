@@ -166,11 +166,41 @@ Google Drive: 1AQFiXi9-xDulKgO-qZCF3tRrBIsrWcf4
 | API POST Endpoint | ✅ FUNCIONANDO | Validado no editor, redirect externo esperado |
 | Google Sheets | ✅ FUNCIONANDO | Dados salvos corretamente |
 | Google Drive | ✅ FUNCIONANDO | Pastas criadas automaticamente |
-| Frontend React | ⏳ PENDENTE TESTE | Pronto para execução |
-| Deploy Netlify | ⏳ PENDENTE | Configuração pronta |
+| Frontend React | ✅ PRONTO | Build testado localmente |
+| Netlify Headers | ✅ CORRIGIDO | Content-Type forçado removido |
+| Deploy Netlify | 🚀 PRONTO | Aguardando deploy final |
 
 ---
 
-**Sistema validado e pronto para uso em produção!** 🎉
+## 🔧 CORREÇÃO APLICADA (Commit aba272f)
+
+**Problema resolvido:** Headers HTTP no `netlify.toml` forçavam `Content-Type: text/html` para todos os arquivos, impedindo que CSS e JavaScript carregassem corretamente.
+
+**Solução:** Removido `Content-Type` forçado, permitindo que Netlify detecte automaticamente o tipo MIME correto de cada arquivo.
+
+📖 Detalhes completos em: `CORRECAO_NETLIFY_HEADERS.md`
+
+---
+
+## 🚀 PRÓXIMO PASSO: DEPLOY NO NETLIFY
+
+Execute um dos comandos:
+
+```bash
+# Opção 1: Via CLI (recomendado)
+npm run build && npx netlify deploy --prod
+
+# Opção 2: Trigger automático via Dashboard
+# Acesse: https://app.netlify.com → Seu Site → Trigger Deploy
+```
+
+Após deploy, verifique:
+- ✅ CSS e JavaScript carregando
+- ✅ Formulário funcional
+- ✅ Integração com Apps Script operacional
+
+---
+
+**Sistema validado e pronto para produção!** 🎉
 
 _Nota: O comportamento de HTTP 302 em testes curl externos é esperado e não indica problema. O frontend React funcionará corretamente._
