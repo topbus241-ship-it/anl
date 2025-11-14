@@ -4,8 +4,8 @@ import FormularioSinistro from './components/FormularioSinistro'
 import ListaSinistros from './components/ListaSinistros'
 import BusIcon from './components/BusIcon'
 
-const DASHBOARD_LOGIN = (import.meta.env.VITE_DASHBOARD_LOGIN || '').trim()
-const DASHBOARD_PASSWORD = (import.meta.env.VITE_DASHBOARD_PASSWORD || '').trim()
+const DASHBOARD_LOGIN = import.meta.env.VITE_DASHBOARD_LOGIN || 'sinistro'
+const DASHBOARD_PASSWORD = import.meta.env.VITE_DASHBOARD_PASSWORD || '139702'
 
 export default function App() {
   const [pagina, setPagina] = useState('formulario')
@@ -17,10 +17,6 @@ export default function App() {
   // Handler para login do painel restrito
   const handleLogin = (e) => {
     e.preventDefault()
-    if (!DASHBOARD_LOGIN || !DASHBOARD_PASSWORD) {
-      setErro('Acesso temporariamente indisponível. Contate o administrador para configurar as credenciais do painel.')
-      return
-    }
     if (loginInput.trim() === DASHBOARD_LOGIN && senhaInput === DASHBOARD_PASSWORD) {
       setDashboardAuth(true)
       setErro('')
