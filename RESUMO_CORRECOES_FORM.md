@@ -1,20 +1,32 @@
+  
 # 🔧 RESUMO DE CORREÇÕES - FormularioSinistro.jsx
+  
 
+  
 ## Commit: a199fcd
+  
 
+  
 ### ✅ PRINCIPAIS MELHORIAS IMPLEMENTADAS
+  
 
 ---
 
+  
 ## 1. **Dropdown de Empresa - CORRIGIDO**
+  
 
+  
 ### ❌ Problema Anterior
+  
 
 - Dropdown cortado por CSS (z-index inadequado)
 - Cliques fora não fechavam o menu
 - Altura sem limite causava overflow
 
+  
 ### ✅ Solução Implementada
+  
 
 ```jsx
 // Container com z-10
@@ -39,22 +51,28 @@ useEffect(() => {
 
 ---
 
+  
 ## 2. **API - URL APPS SCRIPT PREENCHIDA**
+  
 
+  
 ### ❌ Antes
+  
 
 ```jsx
 const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
 ```
 
+  
 ### ✅ Agora
+  
 
 ```jsx
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL ||
   'https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec';
 ```
 
-**Benefícios**
+### Benefícios
 
 - ✓ URL padrão funcional
 - ✓ Fallback para variável de ambiente
@@ -62,9 +80,13 @@ const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL ||
 
 ---
 
+  
 ## 3. **Sistema de Login e Dashboard IMPLEMENTADO**
+  
 
+  
 ### ✅ Tela de Login
+  
 
 ```jsx
 if (telaAtiva === 'login') {
@@ -76,7 +98,9 @@ if (telaAtiva === 'login') {
 }
 ```
 
+  
 ### ✅ Dashboard de Consulta
+  
 
 ```jsx
 if (telaAtiva === 'dashboard') {
@@ -88,7 +112,7 @@ if (telaAtiva === 'dashboard') {
 }
 ```
 
-**Fluxo**
+### Fluxo
 
 1. Usuário clica ícone do gestor (canto superior)
 2. Tela de login aparece
@@ -97,9 +121,13 @@ if (telaAtiva === 'dashboard') {
 
 ---
 
+  
 ## 4. **Gerenciamento de Fotos - MELHORADO**
+  
 
+  
 ### ✅ Preview com validação
+  
 
 ```jsx
 const handleFileChange = async (e) => {
@@ -111,7 +139,9 @@ const handleFileChange = async (e) => {
 };
 ```
 
+  
 ### ✅ Conversão para Base64
+  
 
 ```jsx
 const converterParaBase64 = (file) => {
@@ -124,7 +154,7 @@ const converterParaBase64 = (file) => {
 };
 ```
 
-**Benefícios**
+### Benefícios
 
 - ✓ Fotos enviadas em Base64 (compatível com Sheets)
 - ✓ Limpeza automática de URLs (useEffect)
@@ -132,9 +162,13 @@ const converterParaBase64 = (file) => {
 
 ---
 
+  
 ## 5. **Envio de Dados - CORRIGIDO**
+  
 
+  
 ### ✅ Payload estruturado
+  
 
 ```jsx
 const payload = {
@@ -153,7 +187,9 @@ const payload = {
 };
 ```
 
+  
 ### ✅ Requisição
+  
 
 ```jsx
 await fetch(APPS_SCRIPT_URL, {
@@ -168,9 +204,13 @@ await fetch(APPS_SCRIPT_URL, {
 
 ---
 
+  
 ## 6. **Estados e Validações - IMPLEMENTADOS**
+  
 
+  
 ### ✅ Estados adicionados
+  
 
 ```jsx
 const [fotosPreview, setFotosPreview] = useState([]);
@@ -182,7 +222,9 @@ const [autenticado, setAutenticado] = useState(false);
 const [sinistros, setSinistros] = useState([]);
 ```
 
+  
 ### ✅ Validações
+  
 
 ```jsx
 if (!unidade || !data || !local || !numeroCarro || !responsabilidade) {
@@ -198,9 +240,13 @@ if (fotos.length < 4) {
 
 ---
 
+  
 ## 7. **Credenciais - SINCRONIZADAS**
+  
 
+  
 ### ✅ Login usando variáveis de ambiente
+  
 
 ```jsx
 const handleLogin = () => {
@@ -217,7 +263,9 @@ const handleLogin = () => {
 
 ---
 
+  
 ## 📋 ENDEREÇOS E IDs PREENCHIDOS
+  
 
 | Campo | Valor |
 |-------|-------|
@@ -229,7 +277,9 @@ const handleLogin = () => {
 
 ---
 
+  
 ## 🚀 PRÓXIMOS PASSOS
+  
 
 1. **Testar em Vercel**
    - Verificar se variáveis de ambiente estão corretas
@@ -247,7 +297,9 @@ const handleLogin = () => {
 
 ---
 
+  
 ## 📌 ARQUIVO ATUALIZADO
+  
 
 ✅ `/workspaces/topbusanalise/src/components/FormularioSinistro.jsx`
 

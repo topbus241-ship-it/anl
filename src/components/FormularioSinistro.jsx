@@ -127,15 +127,20 @@ export default function FormularioSinistros() {
 
       const response = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload)
       });
 
-      alert('Sinistro registrado com sucesso!');
-      limpar();
+      const result = await response.json();
+      
+      if (result.sucesso) {
+        alert(`Sinistro registrado com sucesso!\nProtocolo: ${result.dados?.protocolo || 'N/A'}`);
+        limpar();
+      } else {
+        setErro(result.mensagem || 'Erro ao registrar sinistro');
+      }
       
     } catch (error) {
       console.error('Erro ao enviar:', error);
@@ -190,12 +195,11 @@ export default function FormularioSinistros() {
   const carregarSinistros = async () => {
     try {
       const response = await fetch(`${APPS_SCRIPT_URL}?action=listar`, {
-        method: 'GET',
-        mode: 'no-cors'
+        method: 'GET'
       });
       
       const data = await response.json();
-      setSinistros(data.registros || []);
+      setSinistros(data.registros || data.dados || []);
     } catch (error) {
       console.error('Erro ao carregar sinistros:', error);
       setErro('Erro ao carregar registros de sinistros');
