@@ -93,7 +93,8 @@ function doPost(e) {
         motorista: motorista,
         chapa: chapa,
         culpabilidade: culpabilidade,
-        testemunhas: testemunhas
+        testemunhas: testemunhas,
+        descricao: descricao
       });
 
       return responderJSON(true, 'Sinistro registrado com sucesso', {
@@ -223,6 +224,7 @@ function criarPastaGoogleDrive(dados) {
       chapa: dados.chapa,
       culpabilidade: dados.culpabilidade,
       testemunhas: testemunhasStr,
+      descricao: dados.descricao,
       dataCriacao: new Date().toISOString()
     };
 

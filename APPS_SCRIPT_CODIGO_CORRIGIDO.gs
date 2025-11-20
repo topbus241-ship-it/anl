@@ -85,6 +85,8 @@ function doPost(e) {
         motorista: motorista,
         chapa: chapa,
         culpabilidade: culpabilidade,
+        testemunhas: testemunhas,
+        descricao: descricao,
         protocolo: protocolo
       });
       if (pastaCriada && pastaCriada.url) {
@@ -290,6 +292,7 @@ function criarPastaGoogleDrive(dados) {
       chapa: dados.chapa,
       culpabilidade: dados.culpabilidade,
       testemunhas: testemunhasStr,
+      descricao: dados.descricao,
       dataCriacao: new Date().toISOString()
     };
 
