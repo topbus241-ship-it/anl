@@ -323,7 +323,7 @@ export default function FormularioSinistros() {
                               ? 'bg-blue-100 text-blue-800' 
                               : 'bg-green-100 text-green-800'
                           }`}>
-                            {sinistro.unidade === 'TOPBUS' ? 'TopBus' : 'Belo Monte'}
+                            {sinistro.unidade === 'TOPBUS' ? '🚌' : '🚌'}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900 font-semibold">{sinistro.numeroCarro}</td>
