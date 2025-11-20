@@ -1,5 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FileText, X, ChevronDown } from 'lucide-react';
+
+const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec';
+const SIMULAR_API = String(import.meta.env.VITE_SIMULAR_API || '').toLowerCase() === 'true';
+const SIMULAR_API_ERRO = String(import.meta.env.VITE_SIMULAR_API_ERRO || '').toLowerCase() === 'true';
+const API_URL = import.meta.env.VITE_APPS_SCRIPT_URL || DEFAULT_API_URL;
 
 export default function FormularioSinistro() {
   const [unidade, setUnidade] = useState('');
@@ -13,6 +18,9 @@ export default function FormularioSinistro() {
   const [testemunhas, setTestemunhas] = useState([{ nome: '', telefone: '' }]);
   const [descricao, setDescricao] = useState('');
   const [fotos, setFotos] = useState([]);
+  const [errosFormulario, setErrosFormulario] = useState([]);
+  const [enviando, setEnviando] = useState(false);
+  const fotosRef = useRef([]);
 
   const empresas = [
     { id: 'BELO_MONTE', nome: 'Belo Monte Transportes' },
@@ -54,15 +62,52 @@ export default function FormularioSinistro() {
     setFotos(fotos.filter((_, i) => i !== index));
   };
 
+  const simularRequisicao = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+
+    if (SIMULAR_API_ERRO) {
+      throw new Error('Simulação de erro na API. Revise o payload ou desative o modo de falha.');
+    }
+
+    return {
+      sucesso: true,
+      dados: {
+        protocolo: `SIM-${Date.now().toString().slice(-6)}`
+      },
+      mensagem: 'Simulação concluída com sucesso.'
+    };
+  };
+
+  const enviarParaApi = async (payload) => {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error('Serviço indisponível. Tente novamente em instantes.');
+    }
+
+    return response.json();
+  };
+
   const handleSubmit = async () => {
-    if (!unidade || !data || !local || !numeroCarro || !responsabilidade) {
-      alert('Preencha todos os campos obrigatórios.');
+    const erros = [];
+
+    if (!data) erros.push('Informe data e hora.');
+    if (!local) erros.push('Informe o local da ocorrência.');
+    if (!numeroCarro) erros.push('Informe o número do carro.');
+    if (!responsabilidade) erros.push('Escolha a responsabilidade.');
+    if (fotos.length < 4) erros.push('Anexe pelo menos 4 fotos do sinistro.');
+
+    if (erros.length > 0) {
+      setErrosFormulario(erros);
       return;
     }
-    if (fotos.length < 4) {
-      alert('Anexe no mínimo 4 fotos da colisão.');
-      return;
-    }
+
+    setErrosFormulario([]);
+    setEnviando(true);
 
     const payload = {
       unidade,
@@ -77,16 +122,8 @@ export default function FormularioSinistro() {
     };
 
     try {
-      const API_URL = import.meta.env.VITE_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec';
-      
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      const result = SIMULAR_API ? await simularRequisicao() : await enviarParaApi(payload);
 
-      const result = await response.json();
-      
       if (result.sucesso) {
         alert(`Sinistro registrado com sucesso! Protocolo: ${result.dados.protocolo}`);
         limpar();
@@ -95,7 +132,9 @@ export default function FormularioSinistro() {
       }
     } catch (error) {
       console.error('Erro ao enviar:', error);
-      alert('Erro ao enviar dados. Verifique sua conexão.');
+      alert(SIMULAR_API ? error.message : 'Erro ao enviar dados. Verifique sua conexão.');
+    } finally {
+      setEnviando(false);
     }
   };
 
@@ -109,6 +148,7 @@ export default function FormularioSinistro() {
     setResponsabilidade('');
     setTestemunhas([{ nome: '', telefone: '' }]);
     setDescricao('');
+    setErrosFormulario([]);
     fotos.forEach((arquivo) => {
       if (arquivo?.preview) {
         URL.revokeObjectURL(arquivo.preview);
@@ -116,6 +156,20 @@ export default function FormularioSinistro() {
     });
     setFotos([]);
   };
+
+  useEffect(() => {
+    fotosRef.current = fotos;
+  }, [fotos]);
+
+  useEffect(() => {
+    return () => {
+      fotosRef.current.forEach((arquivo) => {
+        if (arquivo?.preview) {
+          URL.revokeObjectURL(arquivo.preview);
+        }
+      });
+    };
+  }, []);
 
   const coresUnidade = unidade === 'TOPBUS' 
     ? { primary: '#0f172a', secondary: '#1e293b', light: '#f1f5f9', hover: '#020617', accent: '#334155' }
@@ -189,6 +243,17 @@ export default function FormularioSinistro() {
                 </p>
               </div>
             </div>
+
+            {errosFormulario.length > 0 && (
+              <div className="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
+                <p className="font-semibold mb-2">Revise os pontos abaixo antes de enviar:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {errosFormulario.map((erro, index) => (
+                    <li key={index}>{erro}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="px-6 sm:px-8 py-8 space-y-8">
@@ -554,10 +619,11 @@ export default function FormularioSinistro() {
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <button
                     onClick={handleSubmit}
-                    className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-lg transition-all duration-300 btn-hover"
+                    disabled={enviando}
+                    className={`flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-lg transition-all duration-300 btn-hover ${enviando ? 'opacity-70 cursor-not-allowed' : ''}`}
                     style={{ backgroundColor: coresUnidade.primary }}
                   >
-                    Registrar Sinistro
+                    {enviando ? 'Enviando...' : 'Registrar Sinistro'}
                   </button>
                   <button
                     onClick={limpar}
@@ -565,6 +631,12 @@ export default function FormularioSinistro() {
                   >
                     Limpar Formulário
                   </button>
+                  {SIMULAR_API && (
+                    <div className="sm:self-center text-xs font-semibold text-amber-700 bg-amber-100 border border-amber-300 rounded-lg px-3 py-2 flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                      Modo de simulação de API ativo
+                    </div>
+                  )}
                 </div>
               </div>
             )}

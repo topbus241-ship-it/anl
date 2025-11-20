@@ -135,6 +135,30 @@ Acesse: `http://localhost:3000`
 - **Deploy**: Vercel
 - **Node.js**: 20.x
 
+## 📡 Exemplos de requisição em cURL
+
+Use a URL configurada em `VITE_APPS_SCRIPT_URL` (ou o valor padrão abaixo) e envie o payload em JSON:
+
+```bash
+API_URL="https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec"
+
+curl -X POST "$API_URL" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "unidade": "TOPBUS",
+    "data": "2025-03-01T12:30",
+    "local": "Av. Paulista, 1000 - São Paulo",
+    "numeroCarro": "1001",
+    "motorista": "João Silva",
+    "chapa": "12345",
+    "responsabilidade": "MOTORISTA_TOPBUS",
+    "testemunhas": [{"nome": "Maria", "telefone": "+55 11 99999-9999"}],
+    "descricao": "Colisão leve em cruzamento com dano no para-choque"
+  }'
+```
+
+Para testar cenários de erro (ex.: payload incompleto), basta alterar ou omitir campos obrigatórios. O Apps Script retornará a mensagem correspondente informando o problema ou, em modo simulado no frontend (`VITE_SIMULAR_API=true`), lançará o erro configurado em `VITE_SIMULAR_API_ERRO`.
+
 ## 📝 Recursos Configurados
 
 | Recurso | ID/Valor |
