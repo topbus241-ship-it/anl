@@ -1,7 +1,7 @@
   
 # 🔧 RESUMO DE CORREÇÕES - FormularioSinistro.jsx
   
-curl -L -X POST "https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec" \
+curl -L -X POST "<https://script.google.com/macros/s/AKfycbzWN0zjwL0iN_4WuDIbl7W-foaf3ckIJO_YmByQEt-PpnQpWR5HcQtT1OcBK4DS79Q5LA/exec>" \
   -H "Content-Type: application/json" \
   -d '{"unidade":"TOPBUS","data":"2025-11-13T14:30","local":"Av. Paulista, 1000 - São Paulo, SP","numeroCarro":"TB-2450","motorista":"Carlos Mendes Silva","chapa":"2450","responsabilidade":"TERCEIRO","testemunhas":[{"nome":"Maria Santos","telefone":"(11) 99876-5432"}],"descricao":"Teste via curl"}'
 

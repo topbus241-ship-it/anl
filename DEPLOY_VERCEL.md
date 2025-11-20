@@ -21,7 +21,7 @@
 
 ### Passo 1: Criar conta
 
-1. Acesse: https://vercel.com
+1. Acesse: <https://vercel.com>
 2. Clique em **"Sign Up"**
 3. Escolha **"Continue with GitHub"**
 4. Autorize o Vercel

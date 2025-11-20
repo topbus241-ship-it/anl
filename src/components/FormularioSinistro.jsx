@@ -4,6 +4,7 @@ import { FileText, X, Loader2 } from 'lucide-react';
 export default function FormularioSinistros() {
   // Empresa fixada como TOPBUS
   const unidade = 'TOPBUS';
+  const corPrimaria = '#2563eb'; // Azul TOPBUS
   const [data, setData] = useState('');
   const [local, setLocal] = useState('');
   const [numeroCarro, setNumeroCarro] = useState('');
