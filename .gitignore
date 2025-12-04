@@ -6,6 +6,7 @@ node_modules/
 # Variáveis de ambiente - NUNCA COMMITAR
 .env
 .env.local
+.env.local
 .env.development.local
 .env.test.local
 .env.production.local
