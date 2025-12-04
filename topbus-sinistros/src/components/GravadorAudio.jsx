@@ -96,81 +96,85 @@ const GravadorAudio = ({ onAudioAdicionado, onAudioRemovido }) => {
   };
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-      <div className="mb-3 flex items-center gap-2">
-        <Mic className="h-4 w-4 text-blue-600" />
-        <label className="text-sm font-semibold text-slate-700">
-          Gravar áudio (opcional)
-        </label>
-      </div>
+    <div className="rounded-lg border transition" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-glass)' }}>
+      <div className="p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Mic className="h-4 w-4" style={{ color: 'var(--accent)' }} />
+          <label className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+            Gravar áudio (opcional)
+          </label>
+        </div>
 
-      {!audioBlob ? (
-        <div className="space-y-3">
-          {!gravando ? (
-            <button
-              type="button"
-              onClick={iniciarGravacao}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 transition hover:bg-blue-100"
-            >
-              <Mic className="h-4 w-4" />
-              Iniciar gravação
-            </button>
-          ) : (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between rounded-lg bg-red-50 px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
-                  <span className="text-sm font-medium text-red-700">
-                    Gravando...
+        {!audioBlob ? (
+          <div className="space-y-3">
+            {!gravando ? (
+              <button
+                type="button"
+                onClick={iniciarGravacao}
+                className="btn-secondary w-full"
+              >
+                <Mic className="h-4 w-4 inline-block mr-2" />
+                Iniciar gravação
+              </button>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between rounded-lg px-4 py-3" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', borderWidth: '1px' }}>
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                    <span className="text-sm font-medium text-red-600 dark:text-red-400">
+                      Gravando...
+                    </span>
+                  </div>
+                  <span className="font-mono text-sm font-semibold text-red-600 dark:text-red-400">
+                    {formatarTempo(tempoGravacao)}
                   </span>
                 </div>
-                <span className="font-mono text-sm font-semibold text-red-700">
-                  {formatarTempo(tempoGravacao)}
+                <button
+                  type="button"
+                  onClick={pararGravacao}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:opacity-90"
+                  style={{ backgroundColor: 'var(--accent)' }}
+                >
+                  <Square className="h-4 w-4 inline-block mr-2" />
+                  Parar gravação
+                </button>
+              </div>
+            )}
+            <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              Clique em "Iniciar gravação" e fale seus detalhes. Você poderá revisar antes de enviar.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="rounded-lg p-3" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.3)', borderWidth: '1px' }}>
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                  ✓ Áudio gravado ({formatarTempo(tempoGravacao)})
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={pararGravacao}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white transition hover:bg-red-600"
-              >
-                <Square className="h-4 w-4" />
-                Parar gravação
-              </button>
-            </div>
-          )}
-          <p className="text-xs text-slate-600">
-            Clique em "Iniciar gravação" e fale seus detalhes. Você poderá revisar antes de enviar.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <div className="rounded-lg bg-emerald-50 p-3">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs font-semibold text-emerald-700">
-                ✓ Áudio gravado ({formatarTempo(tempoGravacao)})
-              </span>
-            </div>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={reproduzirAudio}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-700"
-              >
-                <Play className="h-3 w-3" />
-                Ouvir gravação
-              </button>
-              <button
-                type="button"
-                onClick={removerAudio}
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-100"
-              >
-                <Trash2 className="h-3 w-3" />
-                Remover áudio
-              </button>
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={reproduzirAudio}
+                  className="w-full rounded-lg px-3 py-2 text-xs font-medium text-white transition hover:opacity-90"
+                  style={{ backgroundColor: 'var(--teal)' }}
+                >
+                  <Play className="h-3 w-3 inline-block mr-2" />
+                  Ouvir gravação
+                </button>
+                <button
+                  type="button"
+                  onClick={removerAudio}
+                  className="btn-secondary w-full text-xs"
+                >
+                  <Trash2 className="h-3 w-3 inline-block mr-2" />
+                  Remover áudio
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

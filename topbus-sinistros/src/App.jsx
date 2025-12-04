@@ -2,9 +2,7 @@ import React from "react";
 import FormularioSinistro from "./components/FormularioSinistro";
 import ListaSinistros from "./components/ListaSinistros";
 import ThemeToggle from "./components/ThemeToggle";
-
-const API_URL = process.env.REACT_APP_APPS_SCRIPT_URL;
-const API_KEY = process.env.REACT_APP_API_KEY;
+import { buscarSinistros, inserirSinistro, inserirTestemunhas, uploadImagens, uploadAudio, registrarConsentimentoLGPD } from "./lib/supabase";
 
 const App = () => {
   const [registros, setRegistros] = React.useState([]);
@@ -12,34 +10,14 @@ const App = () => {
   const [erroLista, setErroLista] = React.useState(null);
 
   const carregarRegistros = React.useCallback(async () => {
-    if (!API_URL || !API_KEY) {
-      setErroLista("Configure REACT_APP_APPS_SCRIPT_URL e REACT_APP_API_KEY.");
-      return;
-    }
-
     setCarregandoLista(true);
     setErroLista(null);
 
     try {
-      const resposta = await fetch(API_URL, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          "X-API-Key": API_KEY,
-        },
-      });
-
-      if (!resposta.ok) {
-        throw new Error(`Falha ao listar: ${resposta.status}`);
-      }
-
-      const payload = await resposta.json();
-      const dadosLista = Array.isArray(payload)
-        ? payload
-        : payload?.registros || payload?.sinistros || [];
-      setRegistros(Array.isArray(dadosLista) ? dadosLista : []);
+      const dados = await buscarSinistros();
+      setRegistros(Array.isArray(dados) ? dados : []);
     } catch (erro) {
-      setErroLista(erro.message || "Erro ao sincronizar registros.");
+      setErroLista(erro.message || "Erro ao carregar sinistros do Supabase.");
     } finally {
       setCarregandoLista(false);
     }
@@ -50,35 +28,34 @@ const App = () => {
   }, [carregarRegistros]);
 
   const registrarSinistro = async (dados) => {
-    if (!API_URL || !API_KEY) {
-      throw new Error("Configure REACT_APP_APPS_SCRIPT_URL e REACT_APP_API_KEY.");
+    try {
+      // 1. Inserir sinistro principal
+      const sinistro = await inserirSinistro(dados);
+
+      // 2. Registrar consentimento LGPD
+      await registrarConsentimentoLGPD(sinistro.id, dados.aceitalGPS);
+
+      // 3. Upload de imagens (se houver)
+      if (dados.images && dados.images.length > 0) {
+        await uploadImagens(sinistro.id, dados.images);
+      }
+
+      // 4. Upload de áudio (se houver)
+      if (dados.audio && dados.audio.blob) {
+        await uploadAudio(sinistro.id, dados.audio.blob);
+      }
+
+      // 5. Recarregar lista
+      await carregarRegistros();
+
+      return {
+        id: sinistro.protocolo,
+        protocolo: sinistro.protocolo,
+        message: 'Ocorrência registrada com sucesso!',
+      };
+    } catch (erro) {
+      throw new Error(erro.message || 'Erro ao registrar sinistro no Supabase.');
     }
-
-    const bodyPayload = {
-      ...dados,
-      apiKey: API_KEY,
-    };
-
-    const resposta = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "X-API-Key": API_KEY,
-      },
-      body: JSON.stringify(bodyPayload),
-    });
-
-    if (!resposta.ok) {
-      throw new Error(`Falha ao registrar: ${resposta.status}`);
-    }
-
-    const conteudo = await resposta.json();
-    if (conteudo.error) {
-      throw new Error(conteudo.message || "Erro ao registrar sinistro.");
-    }
-
-    await carregarRegistros();
-    return conteudo;
   };
 
   return (

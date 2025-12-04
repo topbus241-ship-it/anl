@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from 'react';
 import {
   AlertCircle,
   Bus,
@@ -11,28 +11,29 @@ import {
   Trash2,
   Upload,
   User,
-} from "lucide-react";
-import GravadorAudio from "./GravadorAudio";
+} from 'lucide-react';
+import GravadorAudio from './GravadorAudio';
 
 const LIMITE_IMAGENS = 10;
 const TAMANHO_MAX_EM_BYTES = 5 * 1024 * 1024;
 
 const camposObrigatorios = {
-  dataHora: "Data e hora",
-  local: "Local do acidente",
-  onibus: "Identificacao do onibus",
-  motorista: "Nome do motorista",
-  descricao: "Descricao do ocorrido",
+  dataHora: 'Data e hora',
+  local: 'Local do acidente',
+  onibus: 'Identificação do ônibus',
+  motorista: 'Nome do motorista',
+  descricao: 'Descrição do ocorrido',
 };
 
 const estadoInicial = {
-  dataHora: "",
-  local: "",
-  onibus: "",
-  motorista: "",
-  terceiro: "",
-  testemunhas: "",
-  descricao: "",
+  dataHora: '',
+  local: '',
+  onibus: '',
+  motorista: '',
+  terceiro: '',
+  testemunhas: '',
+  descricao: '',
+  aceitalGPS: false,
 };
 
 const FormularioSinistro = ({ onSubmit, onSuccess }) => {
@@ -49,8 +50,11 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
   }, [formData]);
 
   const atualizarCampo = (evento) => {
-    const { name, value } = evento.target;
-    setFormData((anterior) => ({ ...anterior, [name]: value }));
+    const { name, value, type, checked } = evento.target;
+    setFormData((anterior) => ({
+      ...anterior,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const fileToBase64 = (arquivo) => {
@@ -67,7 +71,7 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
     setErro(null);
 
     if (arquivos.length + imagens.length > LIMITE_IMAGENS) {
-      setErro("Maximo de 10 imagens permitidas.");
+      setErro('Máximo de 10 imagens permitidas.');
       return;
     }
 
@@ -80,14 +84,14 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
         continue;
       }
 
-      if (!arquivo.type.startsWith("image/")) {
-        setErro(`Arquivo "${arquivo.name}" nao e uma imagem valida.`);
+      if (!arquivo.type.startsWith('image/')) {
+        setErro(`Arquivo "${arquivo.name}" não é uma imagem válida.`);
         continue;
       }
 
       try {
         const base64 = await fileToBase64(arquivo);
-        const [, payloadBase64] = base64.split(",");
+        const [, payloadBase64] = base64.split(',');
 
         novasImagens.push({
           filename: arquivo.name,
@@ -101,7 +105,6 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
         });
       } catch (erroConversao) {
         setErro(`Erro ao processar imagem "${arquivo.name}".`);
-        // eslint-disable-next-line no-console
         console.error(erroConversao);
       }
     }
@@ -129,13 +132,18 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
     if (faltandoObrigatorios.length > 0) {
       const nomesCampos = faltandoObrigatorios
         .map((campo) => camposObrigatorios[campo])
-        .join(", ");
-      setErro(`Preencha os campos obrigatorios: ${nomesCampos}.`);
+        .join(', ');
+      setErro(`Preencha os campos obrigatórios: ${nomesCampos}.`);
       return false;
     }
 
     if (imagens.length === 0) {
-      setErro("Adicione pelo menos uma imagem do sinistro.");
+      setErro('Adicione pelo menos uma imagem da ocorrência.');
+      return false;
+    }
+
+    if (!formData.aceitalGPS) {
+      setErro('Você deve aceitar o uso de dados de localização para prosseguir.');
       return false;
     }
 
@@ -150,7 +158,7 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
     if (!validarFormulario()) return;
 
     if (!onSubmit) {
-      setErro("Acao de envio nao configurada.");
+      setErro('Ação de envio não configurada.');
       return;
     }
 
@@ -177,31 +185,31 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
 
       onSuccess?.(resposta);
     } catch (erroEnvio) {
-      setErro(erroEnvio.message || "Erro ao enviar dados.");
+      setErro(erroEnvio.message || 'Erro ao enviar dados.');
     } finally {
       setCarregando(false);
     }
   };
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white shadow">
-      <header className="border-b border-slate-200 bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5 text-white">
+    <section className="glass animate-fade-in">
+      <header className="border-b border-slate-200/30 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 px-6 py-8 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <Bus className="h-9 w-9" />
+          <Bus className="h-8 w-8" style={{ color: 'var(--accent)' }} />
           <div>
-            <h1 className="text-xl font-bold uppercase tracking-wide">
-              TOPBUS Sinistros
+            <h1 className="text-2xl font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>
+              Registro de Ocorrência
             </h1>
-            <p className="text-sm text-blue-100">
-              Registro completo de ocorrencias com upload de evidencias
+            <p className="mt-1 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+              Preencha com atenção todos os dados e fotos para análise
             </p>
           </div>
         </div>
       </header>
 
       {erro && (
-        <div className="mx-6 mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700">
-          <div className="flex items-center gap-2 font-medium">
+        <div className="mx-6 mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-4 text-sm backdrop-blur-sm animate-fade-in">
+          <div className="flex items-center gap-2 font-medium text-red-600 dark:text-red-400">
             <AlertCircle className="h-5 w-5" />
             <span>{erro}</span>
           </div>
@@ -209,120 +217,94 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
       )}
 
       {resultado && (
-        <div className="mx-6 mt-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-5 text-sm text-emerald-800">
+        <div className="mx-6 mt-6 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-5 text-sm backdrop-blur-sm animate-fade-in">
           <div className="flex items-start gap-3">
-            <CheckCircle2 className="mt-1 h-5 w-5" />
+            <CheckCircle2 className="mt-1 h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             <div className="flex-1">
-              <p className="text-base font-semibold">
-                Sinistro registrado com sucesso.
+              <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400">
+                Ocorrência registrada com sucesso!
               </p>
               {resultado.id && (
-                <p className="mt-2 font-mono text-sm text-emerald-700">
+                <p className="mt-2 font-mono text-sm text-emerald-700 dark:text-emerald-300">
                   Protocolo: {resultado.id}
                 </p>
               )}
-              <div className="mt-3 flex flex-col gap-2">
-                {resultado.sheetUrl && (
-                  <a
-                    href={resultado.sheetUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-blue-700 hover:underline"
-                  >
-                    <span role="img" aria-label="planilha">
-                      📊
-                    </span>
-                    Visualizar registro na planilha
-                  </a>
-                )}
-                {resultado.folderUrl && (
-                  <a
-                    href={resultado.folderUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-blue-700 hover:underline"
-                  >
-                    <span role="img" aria-label="drive">
-                      📁
-                    </span>
-                    Visualizar arquivos no Drive
-                  </a>
-                )}
-              </div>
             </div>
           </div>
         </div>
       )}
 
       <form className="space-y-6 px-6 py-8" onSubmit={handleSubmit}>
-        <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <Calendar className="h-4 w-4 text-blue-600" />
-            Data e hora da ocorrencia *
-          </label>
-          <input
-            type="datetime-local"
-            name="dataHora"
-            value={formData.dataHora}
-            onChange={atualizarCampo}
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              <Calendar className="h-4 w-4" style={{ color: 'var(--accent)' }} />
+              Data e hora da ocorrência *
+            </label>
+            <input
+              type="datetime-local"
+              name="dataHora"
+              value={formData.dataHora}
+              onChange={atualizarCampo}
+              className="input-glass"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <MapPin className="h-4 w-4 text-blue-600" />
-            Local do acidente *
-          </label>
-          <input
-            type="text"
-            name="local"
-            value={formData.local}
-            onChange={atualizarCampo}
-            placeholder="Ex: Av. Tancredo Neves, 1234 - proximo ao terminal central"
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              <MapPin className="h-4 w-4" style={{ color: 'var(--accent)' }} />
+              Local do acidente *
+            </label>
+            <input
+              type="text"
+              name="local"
+              value={formData.local}
+              onChange={atualizarCampo}
+              placeholder="Ex: Av. Tancredo Neves, 1234"
+              className="input-glass"
+              required
+            />
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <Bus className="h-4 w-4 text-blue-600" />
-              Identificacao do onibus *
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              <Bus className="h-4 w-4" style={{ color: 'var(--accent)' }} />
+              Identificação do ônibus *
             </label>
             <input
               type="text"
               name="onibus"
               value={formData.onibus}
               onChange={atualizarCampo}
-              placeholder="Ex: TOP-1234 ou Veiculo 101"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: TOP-1234 ou Veículo 101"
+              className="input-glass"
               required
             />
           </div>
 
           <div>
-            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <User className="h-4 w-4 text-blue-600" />
-              Motorista responsavel *
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              <User className="h-4 w-4" style={{ color: 'var(--accent)' }} />
+              Motorista responsável *
             </label>
             <input
               type="text"
               name="motorista"
               value={formData.motorista}
               onChange={atualizarCampo}
-              placeholder="Ex: Jose da Silva"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: José da Silva"
+              className="input-glass"
               required
             />
           </div>
         </div>
 
         <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <User className="h-4 w-4 text-slate-400" />
+          <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+            <User className="h-4 w-4" style={{ color: 'var(--text-tertiary)' }} />
             Terceiros envolvidos
           </label>
           <input
@@ -330,17 +312,17 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
             name="terceiro"
             value={formData.terceiro}
             onChange={atualizarCampo}
-            placeholder="Ex: Joao Pereira - DEF-5678 - (31) 99999-9999"
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ex: João Pereira - DEF-5678 - (31) 99999-9999"
+            className="input-glass"
           />
-          <p className="mt-1 text-xs text-slate-500">
-            Opcional: informe nome, placa e contato se houver terceiros.
+          <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+            Opcional: informações do terceiro envolvido
           </p>
         </div>
 
         <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <User className="h-4 w-4 text-slate-400" />
+          <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+            <User className="h-4 w-4" style={{ color: 'var(--text-tertiary)' }} />
             Testemunhas
           </label>
           <input
@@ -349,47 +331,76 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
             value={formData.testemunhas}
             onChange={atualizarCampo}
             placeholder="Ex: Maria Joana - (31) 88888-8888"
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-glass"
           />
-          <p className="mt-1 text-xs text-slate-500">
-            Opcional: informe nome e contato das testemunhas.
+          <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+            Opcional: nomes e contatos
           </p>
         </div>
 
-        <GravadorAudio 
-          onAudioAdicionado={handleAudioAdicionado}
-          onAudioRemovido={handleAudioRemovido}
-        />
-
-        <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <FileText className="h-4 w-4 text-blue-600" />
-            Descricao detalhada *
+        {/* Seção: Descrição + Áudio em Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              <FileText className="h-4 w-4" style={{ color: 'var(--accent)' }} />
+              Descrição detalhada *
+            </label>
+            <textarea
+              name="descricao"
+              value={formData.descricao}
+              onChange={atualizarCampo}
+              rows={5}
+              placeholder="Relate como ocorreu o acidente, condições do tráfego, danos e demais detalhes."
+              className="input-glass resize-none"
+              required
+            />
+            <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              Quanto mais detalhes, melhor será a análise
+            </p>
+          </div>
+          
+          <div className="lg:col-span-1">
+            <GravadorAudio 
+              onAudioAdicionado={handleAudioAdicionado}
+              onAudioRemovido={handleAudioRemovido}
+            />
+          </div>
+        </div>
+        
+        {/* Seção: Consentimento LGPS */}
+        <div className="rounded-lg border transition p-4" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-glass)' }}>
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="aceitalGPS"
+              checked={formData.aceitalGPS}
+              onChange={atualizarCampo}
+              className="mt-1 h-5 w-5 rounded transition cursor-pointer"
+              style={{
+                accentColor: 'var(--accent)',
+              }}
+              required
+            />
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              Aceito o uso de dados de localização (GPS) para melhorar a precisão do registro. 
+              <span className="block text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
+                Meus dados de localização serão coletados apenas durante o envio deste formulário e serão protegidos conforme nossa política de privacidade.
+              </span>
+            </span>
           </label>
-          <textarea
-            name="descricao"
-            value={formData.descricao}
-            onChange={atualizarCampo}
-            rows={5}
-            placeholder="Relate como ocorreu o acidente, condicoes do trafego, danos e demais detalhes."
-            className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          <p className="mt-1 text-xs text-slate-500">
-            Quanto mais detalhes forem registrados, melhor sera a analise.
-          </p>
         </div>
 
         <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <FileImage className="h-4 w-4 text-blue-600" />
-            Imagens do sinistro *
+          <label className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+            <FileImage className="h-4 w-4" style={{ color: 'var(--accent)' }} />
+            Imagens da ocorrência *
           </label>
-          <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 text-center text-sm text-slate-600 transition hover:border-blue-400 hover:bg-blue-50">
-            <Upload className="mb-2 h-7 w-7 text-slate-400" />
-            <span>Selecione imagens JPEG ou PNG</span>
-            <span className="mt-1 text-xs text-slate-400">
-              Maximo de 10 arquivos, cada um com ate 5MB
+          <label className="flex h-40 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition"
+            style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-glass)' }}>
+            <Upload className="mb-2 h-8 w-8" style={{ color: 'var(--text-tertiary)' }} />
+            <span style={{ color: 'var(--text-secondary)' }}>Selecione imagens</span>
+            <span className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              Máximo de 10 arquivos, até 5MB cada
             </span>
             <input
               type="file"
@@ -402,34 +413,24 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
 
           {previews.length > 0 && (
             <div className="mt-4">
-              <p className="mb-3 text-sm text-slate-600">
-                {previews.length}{" "}
-                {previews.length === 1
-                  ? "imagem selecionada"
-                  : "imagens selecionadas"}
+              <p className="mb-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                {previews.length} {previews.length === 1 ? 'imagem selecionada' : 'imagens selecionadas'}
               </p>
               <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
                 {previews.map((preview, indice) => (
-                  <div key={`${preview.name}-${indice}`} className="group relative">
+                  <div key={`${preview.name}-${indice}`} className="group relative rounded-lg overflow-hidden">
                     <img
                       src={preview.url}
                       alt={preview.name}
-                      className="h-32 w-full rounded-lg border border-slate-200 object-cover"
+                      className="h-32 w-full object-cover"
                     />
                     <button
                       type="button"
                       onClick={() => removerImagem(indice)}
                       className="absolute right-2 top-2 rounded-full bg-red-500 p-1.5 text-white opacity-0 transition group-hover:opacity-100 hover:bg-red-600"
-                      title="Remover imagem"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
-                    <p
-                      className="mt-1 truncate text-xs text-slate-600"
-                      title={preview.name}
-                    >
-                      {preview.name}
-                    </p>
                   </div>
                 ))}
               </div>
@@ -440,22 +441,24 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
         <button
           type="submit"
           disabled={carregando}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-4 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="btn-primary w-full flex items-center justify-center gap-2"
         >
           {carregando ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin" />
-              Registrando sinistro...
+              Registrando...
             </>
           ) : (
             <>
               <CheckCircle2 className="h-5 w-5" />
-              Registrar sinistro
+              Registrar Ocorrência
             </>
           )}
         </button>
 
-        <p className="text-center text-xs text-slate-500">* Campos obrigatorios</p>
+        <p className="text-center text-xs" style={{ color: 'var(--text-tertiary)' }}>
+          * Campos obrigatórios
+        </p>
       </form>
     </section>
   );
