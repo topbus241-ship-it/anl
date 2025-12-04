@@ -1,0 +1,178 @@
+╔════════════════════════════════════════════════════════════════╗
+║   🚌 TOPBUS SINISTROS v2.0 - COMECE AQUI 🚀                  ║
+║   Sistema de Gestão de Sinistros com Supabase (SEGURO)       ║
+╚════════════════════════════════════════════════════════════════╝
+
+👋 BEM-VINDO!
+
+Este é seu novo sistema TOPBUS v2.0 com backend no Supabase.
+
+✨ O que mudou de bom:
+  ✅ Backend grátis (sem Google Apps Script complexo)
+  ✅ Banco de dados PostgreSQL seguro
+  ✅ RLS (Row Level Security) implementado
+  ✅ Auditoria automática de todas as mudanças
+  ✅ Credenciais seguras (não hardcoded)
+  ✅ Deploy em 15 minutos
+
+═══════════════════════════════════════════════════════════════════
+
+📖 LEIA PRIMEIRO (3 minutos):
+  → GUIA_RAPIDO.md (Você está aqui!)
+  → RESUMO_EXECUTIVO.md (Visão geral)
+
+🚀 QUER FAZER DEPLOY AGORA? (15 minutos)
+  → DEPLOY_SUPABASE_SEGURO.md (Passo-a-passo)
+
+🔒 QUER ENTENDER SEGURANÇA?
+  → SEGURANCA.md (Detalhes técnicos)
+
+✅ ANTES DE FAZER DEPLOY:
+  → CHECKLIST_PRE_DEPLOY.md (Validação)
+
+═══════════════════════════════════════════════════════════════════
+
+⚡ QUICK START (5 PASSOS - 15 MINUTOS):
+
+1. Criar Projeto Supabase
+   └─ https://supabase.com → New Project
+   └─ Region: São Paulo
+   └─ Salvar URL e chave anônima
+
+2. Configurar Ambiente Local
+   └─ cp .env.example .env.local
+   └─ Editar com suas credenciais Supabase
+
+3. Executar Schema SQL
+   └─ Supabase Dashboard > SQL Editor
+   └─ Copiar conteúdo de: supabase-schema-seguro.sql
+   └─ Executar (Run)
+
+4. Testar Localmente
+   └─ npm install
+   └─ npm run dev
+   └─ Acessar: http://localhost:5173
+   └─ Testar formulário
+
+5. Deploy (Netlify)
+   └─ git push origin main
+   └─ Conectar GitHub em https://netlify.com
+   └─ Configurar variáveis de ambiente
+   └─ Pronto! 🎉
+
+═══════════════════════════════════════════════════════════════════
+
+🔍 VERIFICAR SEGURANÇA:
+
+Antes de qualquer deployment, rode:
+  $ bash security-check.sh
+
+Resultado esperado:
+  ✅ Sucesso: 12+
+  ⚠️  Avisos: 0-1
+  ❌ Erros: 0
+
+═══════════════════════════════════════════════════════════════════
+
+📋 ARQUIVOS IMPORTANTES:
+
+CONFIGURAÇÃO:
+  • .env.example ................. Template de variáveis
+  • src/lib/supabase.js .......... Config Supabase (SEGURA)
+  • supabase-schema-seguro.sql ... Schema SQL com RLS
+
+DOCUMENTAÇÃO:
+  • GUIA_RAPIDO.md ............... Referência visual
+  • DEPLOY_SUPABASE_SEGURO.md .... Guia deployment completo
+  • RESUMO_EXECUTIVO.md .......... Visão geral
+  • SEGURANCA.md ................. Relatório segurança
+  • CHECKLIST_PRE_DEPLOY.md ...... Validação pré-deploy
+
+FERRAMENTAS:
+  • security-check.sh ............ Script verificação segurança
+
+═══════════════════════════════════════════════════════════════════
+
+❓ DÚVIDAS?
+
+P: Por onde começo?
+R: Leia RESUMO_EXECUTIVO.md (5 min)
+
+P: Como faço deploy?
+R: Siga DEPLOY_SUPABASE_SEGURO.md (passo-a-passo)
+
+P: É seguro?
+R: Sim! Veja SEGURANCA.md (credenciais removidas, RLS, auditoria)
+
+P: Quanto custa?
+R: GRÁTIS! Supabase oferece 2 projetos gratuitos com 500MB BD
+
+═══════════════════════════════════════════════════════════════════
+
+🎯 PRÓXIMOS PASSOS:
+
+Hoje:
+  [ ] Ler RESUMO_EXECUTIVO.md (5 min)
+  [ ] Ler GUIA_RAPIDO.md (5 min)
+  [ ] Criar projeto Supabase (5 min)
+
+Hoje (Tarde):
+  [ ] Configurar .env.local
+  [ ] Executar schema SQL
+  [ ] Testar localmente (npm run dev)
+  [ ] Rodar security-check.sh
+
+Amanhã:
+  [ ] Deploy em Netlify
+  [ ] Testar em produção
+  [ ] Comunicar equipe
+
+═══════════════════════════════════════════════════════════════════
+
+💡 DICAS IMPORTANTES:
+
+1. NUNCA faça commit do .env.local
+   └─ Já está no .gitignore, mas sempre verificar!
+
+2. Suas credenciais Supabase são CONFIDENCIAIS
+   └─ Compartilhe apenas via WhatsApp, 1Password, etc
+
+3. Rotacione chaves a cada 6 meses
+   └─ Supabase Dashboard > Settings > API > Rotate
+
+4. Supabase faz backup automático diário
+   └─ Você nunca perderá dados!
+
+5. Comunidade ativa em https://discord.gg/supabase
+   └─ Dúvidas? A comunidade ajuda!
+
+═══════════════════════════════════════════════════════════════════
+
+📞 SUPORTE RÁPIDO:
+
+Erro: "Credenciais não encontradas"
+  → Verificar: cat .env.local
+  → Editar: cp .env.example .env.local
+
+Erro: "RLS denied"
+  → Você autenticado? Verificar Supabase > Users
+  → Policy errada? Ver SEGURANCA.md
+
+Erro: "Fotos não fazem upload"
+  → Bucket "sinistros" existe?
+  → Está privado ou público?
+
+═══════════════════════════════════════════════════════════════════
+
+✅ VOCÊ ESTÁ PRONTO!
+
+Seu sistema está seguro, documentado e pronto para produção.
+
+    🚀 Vamos lá! Comece a ler os documentos!
+
+═══════════════════════════════════════════════════════════════════
+
+Última atualização: Dezembro 2024
+Versão: 2.0 (Supabase)
+Status: 🟢 Pronto para Deploy
+

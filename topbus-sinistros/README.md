@@ -1,5 +1,7 @@
 # TOPBUS Sinistros
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/995a44b6-81cb-4918-9239-1d21f45027ec/deploy-status)](https://app.netlify.com/projects/sinistrotp/deploys)
+
 Portal React para registrar e acompanhar sinistros de frota integrado ao Google Apps Script, Google Sheets e Google Drive.
 
 ## Estrutura
