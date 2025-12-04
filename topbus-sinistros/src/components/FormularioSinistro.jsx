@@ -12,6 +12,7 @@ import {
   Upload,
   User,
 } from "lucide-react";
+import GravadorAudio from "./GravadorAudio";
 
 const LIMITE_IMAGENS = 10;
 const TAMANHO_MAX_EM_BYTES = 5 * 1024 * 1024;
@@ -38,6 +39,7 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
   const [formData, setFormData] = useState(estadoInicial);
   const [imagens, setImagens] = useState([]);
   const [previews, setPreviews] = useState([]);
+  const [audioBlob, setAudioBlob] = useState(null);
   const [carregando, setCarregando] = useState(false);
   const [resultado, setResultado] = useState(null);
   const [erro, setErro] = useState(null);
@@ -115,6 +117,14 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
     setPreviews((anteriores) => anteriores.filter((_, i) => i !== indice));
   };
 
+  const handleAudioAdicionado = (blob) => {
+    setAudioBlob(blob);
+  };
+
+  const handleAudioRemovido = () => {
+    setAudioBlob(null);
+  };
+
   const validarFormulario = () => {
     if (faltandoObrigatorios.length > 0) {
       const nomesCampos = faltandoObrigatorios
@@ -150,6 +160,11 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
       const payload = {
         ...formData,
         images: imagens,
+        audio: audioBlob ? {
+          blob: audioBlob,
+          filename: `audio-sinistro-${Date.now()}.webm`,
+          mimeType: 'audio/webm',
+        } : null,
       };
 
       const resposta = await onSubmit(payload);
@@ -158,6 +173,7 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
       setFormData(estadoInicial);
       setImagens([]);
       setPreviews([]);
+      setAudioBlob(null);
 
       onSuccess?.(resposta);
     } catch (erroEnvio) {
@@ -339,6 +355,11 @@ const FormularioSinistro = ({ onSubmit, onSuccess }) => {
             Opcional: informe nome e contato das testemunhas.
           </p>
         </div>
+
+        <GravadorAudio 
+          onAudioAdicionado={handleAudioAdicionado}
+          onAudioRemovido={handleAudioRemovido}
+        />
 
         <div>
           <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
